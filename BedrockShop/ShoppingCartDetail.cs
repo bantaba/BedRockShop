@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace BedrockShop
 {
-    class ShoppingCartDetail
+    public class ShoppingCartDetail
     {
         #region Properties
         public int ShoppingCartDetailId { get; set; }
