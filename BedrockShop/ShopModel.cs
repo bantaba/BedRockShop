@@ -30,7 +30,8 @@ namespace BedrockShop
     }
 
     //public class MyEntity
-    //{
+    //{             //Add-Migration Initial2
+                     //Update-Database
     //    public int Id { get; set; }
     //    public string Name { get; set; }
     //}

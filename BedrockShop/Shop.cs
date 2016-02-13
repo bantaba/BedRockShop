@@ -8,10 +8,19 @@ namespace BedrockShop
 {
     public static class Shop
     {
-
+        public class SearchCriteria
+        {
+            public string CriteriaName { get; set; }
+            public string Operator { get; set; }
+            public string Value { get; set; }
+        }
 
         #region Methods
-
+        public static IEnumerable<Product> SearchProducts(decimal priceValue)
+        {
+            var db =new ShopModel();
+            return db.Products.Where(p => p.Price <= priceValue);
+        }
         public static IEnumerable<Product> GetAllProducts()
         {
             var db = new ShopModel();
@@ -83,6 +92,18 @@ namespace BedrockShop
                 }
                 db.SaveChanges();
             }
+        }
+        
+        public static IEnumerable<ShoppingCartDetail> GetShoppingCartDetails(int customerId)
+        {
+            var db = new ShopModel();
+           var shoppingCart =  db.ShoppingCarts.Where(s => s.CustomerId == customerId).FirstOrDefault();
+            if (shoppingCart == null)
+            {
+                throw new ArgumentException("Shopping cart not fund for the customer");
+            }
+
+            return db.ShoppingCartDetails.Where(d => d.ShoppingCartId == shoppingCart.ShoppingCartId);
         }
         #endregion
     }
