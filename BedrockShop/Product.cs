@@ -15,6 +15,7 @@ namespace BedrockShop
         /// <summary>
         /// Id of the item
         /// </summary>
+        [key]
         public int ProductId { get; set; }
         /// <summary>
         /// Name of Item

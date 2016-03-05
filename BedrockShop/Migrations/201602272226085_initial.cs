@@ -3,7 +3,7 @@ namespace BedrockShop.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class InitialCreate : DbMigration
+    public partial class initial : DbMigration
     {
         public override void Up()
         {
@@ -60,19 +60,60 @@ namespace BedrockShop.Migrations
                         Price = c.Decimal(nullable: false, precision: 18, scale: 2),
                         Weight = c.Decimal(nullable: false, precision: 18, scale: 2),
                         Image = c.String(),
+                        ShoppingCart_ShoppingCartId = c.Int(),
                     })
-                .PrimaryKey(t => t.ProductId);
+                .PrimaryKey(t => t.ProductId)
+                .ForeignKey("dbo.ShoppingCarts", t => t.ShoppingCart_ShoppingCartId)
+                .Index(t => t.ShoppingCart_ShoppingCartId);
+            
+            CreateTable(
+                "dbo.ShoppingCartDetails",
+                c => new
+                    {
+                        ShoppingCartDetailId = c.Int(nullable: false, identity: true),
+                        ShoppingCartId = c.Int(nullable: false),
+                        ProductId = c.Int(nullable: false),
+                        Quantity = c.Int(nullable: false),
+                        SubTotal = c.Decimal(nullable: false, precision: 18, scale: 2),
+                    })
+                .PrimaryKey(t => t.ShoppingCartDetailId)
+                .ForeignKey("dbo.Products", t => t.ProductId, cascadeDelete: true)
+                .ForeignKey("dbo.ShoppingCarts", t => t.ShoppingCartId, cascadeDelete: true)
+                .Index(t => t.ShoppingCartId)
+                .Index(t => t.ProductId);
+            
+            CreateTable(
+                "dbo.ShoppingCarts",
+                c => new
+                    {
+                        ShoppingCartId = c.Int(nullable: false, identity: true),
+                        SubTotal = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        CustomerId = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.ShoppingCartId)
+                .ForeignKey("dbo.Customers", t => t.CustomerId, cascadeDelete: true)
+                .Index(t => t.CustomerId);
             
         }
         
         public override void Down()
         {
+            DropForeignKey("dbo.ShoppingCartDetails", "ShoppingCartId", "dbo.ShoppingCarts");
+            DropForeignKey("dbo.Products", "ShoppingCart_ShoppingCartId", "dbo.ShoppingCarts");
+            DropForeignKey("dbo.ShoppingCarts", "CustomerId", "dbo.Customers");
+            DropForeignKey("dbo.ShoppingCartDetails", "ProductId", "dbo.Products");
             DropForeignKey("dbo.OrderDetails", "ProductID", "dbo.Products");
             DropForeignKey("dbo.OrderDetails", "OrderHeader_OrderHeaderId", "dbo.OrderHeaders");
             DropForeignKey("dbo.OrderHeaders", "CustomerID", "dbo.Customers");
+            DropIndex("dbo.ShoppingCarts", new[] { "CustomerId" });
+            DropIndex("dbo.ShoppingCartDetails", new[] { "ProductId" });
+            DropIndex("dbo.ShoppingCartDetails", new[] { "ShoppingCartId" });
+            DropIndex("dbo.Products", new[] { "ShoppingCart_ShoppingCartId" });
             DropIndex("dbo.OrderDetails", new[] { "OrderHeader_OrderHeaderId" });
             DropIndex("dbo.OrderDetails", new[] { "ProductID" });
             DropIndex("dbo.OrderHeaders", new[] { "CustomerID" });
+            DropTable("dbo.ShoppingCarts");
+            DropTable("dbo.ShoppingCartDetails");
             DropTable("dbo.Products");
             DropTable("dbo.OrderDetails");
             DropTable("dbo.OrderHeaders");

@@ -10,7 +10,6 @@ namespace BedrockShop.Migrations
         public Configuration()
         {
             AutomaticMigrationsEnabled = false;
-            ContextKey = "BedrockShop.ShopModel";
         }
 
         protected override void Seed(BedrockShop.ShopModel context)
